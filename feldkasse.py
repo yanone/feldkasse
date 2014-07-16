@@ -1,4 +1,4 @@
-import os, plistlib, glob
+import os, plistlib, glob, time
 from ynlib.system import GetChr 
 import argparse
 
@@ -66,6 +66,7 @@ class Checkout(object):
 					price += int(self.cart[key]) * products[key].price[currency]
 			cart['price'] = price
 			cart['currency'] = currency
+			cart['time'] = time.time()
 		
 			filename = str(len(glob.glob(os.path.join(args['storageFolder'], '*.plist'))) + 1) + '.plist'
 		
