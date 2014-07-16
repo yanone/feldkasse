@@ -1,5 +1,6 @@
 import os, plistlib, glob, time
 from ynlib.system import GetChr 
+from ynlib.strings import formatPrice
 import argparse
 
 parser = argparse.ArgumentParser(description='Feldkasse simple POS system')
@@ -52,7 +53,7 @@ class Checkout(object):
 				price += int(self.cart[key]) * products[key].price[currency]
 		print self.action
 		print '============='
-		print price, currency
+		print formatPrice(price), currency
 	
 	def checkOut(self):
 		if self.cart:
@@ -121,6 +122,11 @@ while True:
 	if products.has_key(keypress):
 		checkout.actions[checkout.action](keypress)
 	
+	# Delete cart
+	if keypress == '=':
+		checkout = Checkout()
+
+	# Check out
 	if keypress == '\n':
 		checkout.checkOut()
 		checkout = Checkout()
