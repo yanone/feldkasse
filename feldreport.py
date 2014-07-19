@@ -46,7 +46,7 @@ while True:
 		if not IPfolder.endswith('/'):
 			IPfolder += '/'
 		os.system('mkdir %s' % IPfolder)
-		os.system('rsync -avze ssh pos@%s:/home/pos/feldkasse/%s/ %s' % (IP, foldername, foldername, IPfolder))
+		os.system('rsync -avze ssh pos@%s:/home/pos/feldkasse/%s/ %s' % (IP, foldername, IPfolder))
 
 
 		for f in glob.glob(os.path.join(IPfolder, '*.plist')):
