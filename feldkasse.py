@@ -242,12 +242,12 @@ checkout = Checkout()
 
 
 while True:
+	os.system('clear')
 	print time.strftime("%A, %H:%M").rjust(80)
 	checkout.screenPrint()
 
 
 	keypress = GetChr(60) # wait max. 60 seconds
-	os.system('clear')
 	
 	
 	# Change action
