@@ -240,43 +240,46 @@ checkout = Checkout()
 
 # Loop
 
+try:
+	while True:
+		os.system('clear')
+		print time.strftime("%A, %H:%M").rjust(80)
+		checkout.screenPrint()
 
-while True:
-	os.system('clear')
-	print time.strftime("%A, %H:%M").rjust(80)
-	checkout.screenPrint()
 
-
-	keypress = GetChr(60) # wait max. 60 seconds
+		keypress = GetChr(60) # wait max. 60 seconds
 	
 	
-	# Change action
-	if checkout.actions.has_key(keypress):
-		checkout.action = keypress
+		# Change action
+		if checkout.actions.has_key(keypress):
+			checkout.action = keypress
 
-	# Change currency
-	if currencies.has_key(keypress):
-		currency = currencies[keypress]
+		# Change currency
+		if currencies.has_key(keypress):
+			currency = currencies[keypress]
 
-	# Add/remove product
-	if products.has_key(keypress):
-		checkout.actions[checkout.action](keypress)
+		# Add/remove product
+		if products.has_key(keypress):
+			checkout.actions[checkout.action](keypress)
 	
-	# Delete cart
-	if keypress == '0':
-		checkout = Checkout()
-
-	# Check out
-	if keypress == '\n':
-		if checkout.checkOut():
-			checkout.printToPrinter()
+		# Delete cart
+		if keypress == '0':
 			checkout = Checkout()
-			currency = 'EUR'
 
-	if keypress == ',':
-		if printerServerThread:
-			printerServerThread.stop()
-		exit()
+		# Check out
+		if keypress == '\n':
+			if checkout.checkOut():
+				checkout.printToPrinter()
+				checkout = Checkout()
+				currency = 'EUR'
+
+		if keypress == ',':
+			if printerServerThread:
+				printerServerThread.stop()
+			exit()
 
 
-	checkout.screenPrint()
+		checkout.screenPrint()
+except:
+	if printerServerThread:
+		printerServerThread.stop()
