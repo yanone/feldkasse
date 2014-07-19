@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, os
+import sys, os, time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import os, plistlib, glob, time
 from ynlib.system import GetChr 
-from ynlib.strings import formatPrice
+from ynlib.strings import *
 import argparse
 from ynlib.files import *
 
@@ -89,6 +89,7 @@ if args['printerIP'] == 'localhost':
 
 
 def networkPrint(data):
+	
 	import socket
 	import sys
 
@@ -243,6 +244,10 @@ checkout.screenPrint()
 while True:
 	keypress = GetChr()
 	os.system('clear')
+	
+	# TIme
+	
+	print time.strftime("%A, %H:%M").rjust(80)
 	
 	# Change action
 	if checkout.actions.has_key(keypress):
