@@ -236,18 +236,19 @@ for key in productsPlist.keys():
 
 os.system('clear')
 checkout = Checkout()
-checkout.screenPrint()
+
 
 # Loop
 
 
 while True:
-	keypress = GetChr()
+	print time.strftime("%A, %H:%M").rjust(80)
+	checkout.screenPrint()
+
+
+	keypress = GetChr(60) # wait max. 60 seconds
 	os.system('clear')
 	
-	# TIme
-	
-	print time.strftime("%A, %H:%M").rjust(80)
 	
 	# Change action
 	if checkout.actions.has_key(keypress):
