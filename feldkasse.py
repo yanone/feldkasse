@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 
@@ -7,13 +8,12 @@ from ynlib.strings import formatPrice
 import argparse
 from ynlib.files import *
 
-import cups
-from xhtml2pdf import pisa
 
 
 parser = argparse.ArgumentParser(description='Feldkasse simple POS system')
 parser.add_argument('productsFile', metavar='PLIST', type=str, help='products .plist file')
 parser.add_argument('storageFolder', metavar='FOLDER', type=str, help='destination folder for checkout receipts')
+parser.add_argument('printerIP', metavar='PRINTERIP', type=str, help='IP address of POS with receipt printer. "localhost" for self.')
 args = vars(parser.parse_args())
 
 if not os.path.exists(args['productsFile']):
@@ -25,6 +25,85 @@ if not os.path.exists(args['storageFolder']):
 
 umrechnungskurs = 310.8
 mwst = .07
+
+
+
+
+
+
+################################### Printing ##########################
+
+printerServerThread = None
+if args['printerIP'] == 'localhost':
+
+	# connect to USB thermal printer
+	from escpos import *
+	Epson = printer.Usb(0x04b8,0x0e02)
+
+	# TCP server
+	import SocketServer
+
+	class MyTCPHandler(SocketServer.BaseRequestHandler):
+		"""
+		The RequestHandler class for our server.
+
+		It is instantiated once per connection to the server, and must
+		override the handle() method to implement communication to the
+		client.
+		"""
+
+		def handle(self):
+			# self.request is the TCP socket connected to the client
+			self.data = self.request.recv(1024).strip()
+			Epson.text(self.data)
+			Epson.cut()
+		
+			# just send back the same data, but upper-cased
+			self.request.sendall(self.data.upper())
+
+
+
+	HOST, PORT = "localhost", 9999
+
+	# Create the server, binding to localhost on port 9999
+	server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
+
+	# Run server in separate thread
+	import threading
+	class PrinterServer(threading.Thread): 
+		def __init__(self): 
+			threading.Thread.__init__(self) 
+ 
+		def run(self):
+		
+			server.serve_forever()
+			
+
+		def stop(self):
+			self._Thread__stop()
+	printerServerThread = PrinterServer()
+	printerServerThread.start()
+
+
+
+def networkPrint(data):
+	import socket
+	import sys
+
+	HOST, PORT = args['printerIP'], 9999
+
+	# Create a socket (SOCK_STREAM means a TCP socket)
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+	try:
+		# Connect to server and send data
+		sock.connect((HOST, PORT))
+		sock.sendall(data + "\n")
+
+		# Receive data from the server and shut down
+		received = sock.recv(1024)
+	finally:
+		sock.close()	
 
 
 def storagePlistFiles():
@@ -109,50 +188,25 @@ class Checkout(object):
 
 	def printToPrinter(self):
 		# Filename for temp file
-		filename = os.path.join(os.path.dirname(__file__), 'print.pdf')
+		filename = os.path.join(os.path.dirname(__file__), 'print.txt')
 		
 	
 		price = 0
-		xhtml = []
-		xhtml.append('<p style="font-size: 10pt;">')
-		xhtml.append('<b>JUICIE CAF&#x00C9; @ O.Z.O.R.A</b>')
+		string = []
+		string.append('JUICIE CAFE @ O.Z.O.R.A')
 		for key in self.cart.keys():
 			if self.cart[key]:
-				xhtml.append('%sx %s' % (str(self.cart[key]).rjust(2), products[key].name))
+				string.append('%sx %s' % (str(self.cart[key]).rjust(2), products[key].name))
 				price += int(self.cart[key]) * products[key].price[currency]
-		xhtml.append('<b>' + str(formatPrice(price)) + ' ' + currency + '</b>')
+		string.append('' + str(formatPrice(price)) + ' ' + currency + '')
 		if currency == 'HUF':
 			mwst_summe = price / umrechnungskurs * mwst
 		else:
 			mwst_summe = price * mwst
-		xhtml.append('Incl. 7%% German VAT (%s EUR)' % (formatPrice(mwst_summe)))
-		xhtml.append('<br />.')
-		xhtml.append('</p>')
+		string.append('Incl. 7%% German VAT (%s EUR)' % (formatPrice(mwst_summe)))
 
-		xhtml = '<br />'.join(map(str, xhtml))
+		networkPrint('\n'.join(map(str, string)))
 
-       
-		pdf = pisa.CreatePDF(xhtml, file(filename, "w"))
-		
-		#WriteToFile(filename, xhtml)
-		
-		if not pdf.err:
-		#if True:
-			# Close PDF file - otherwise we can't read it
-			pdf.dest.close()
-   
-			# print the file using cups
-			conn = cups.Connection()
-			# Get a list of all printers
-			printers = conn.getPrinters()
-			#for printer in printers: 
-			#	# Print name of printers to stdout (screen)
-			#	print printer, printers[printer]["device-uri"]
-			# get first printer from printer list
-			printer_name = printers.keys()[0]
-			conn.printFile(printer_name, filename, "Python_Status_print", {})
-		else:
-			print "Unable to create pdf file"
 		
 
 class Product(object):
@@ -212,6 +266,11 @@ while True:
 			checkout.printToPrinter()
 			checkout = Checkout()
 			currency = 'EUR'
+
+	if keypress == ',':
+		if printerServerThread:
+			printerServerThread.stop()
+		exit()
 
 
 	checkout.screenPrint()
