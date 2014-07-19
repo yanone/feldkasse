@@ -281,5 +281,6 @@ try:
 
 		checkout.screenPrint()
 except:
+	print "Error in loop"
 	if printerServerThread:
 		printerServerThread.stop()
