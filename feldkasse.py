@@ -65,7 +65,7 @@ if args['printerIP'] == 'localhost':
 
 
 
-	HOST, PORT = "localhost", 9999
+	HOST, PORT = "", 9999
 
 	# Create the server, binding to localhost on port 9999
 	server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
