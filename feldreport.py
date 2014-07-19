@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import os, plistlib, glob, time
 from ynlib.system import GetChr 
 from ynlib.strings import formatPrice
@@ -9,6 +12,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Feldkasse simple POS system')
 parser.add_argument('storageFolder', metavar='FOLDER', type=str, help='source folder for checkout receipts')
+parser.add_argument('IPs', metavar='IPS', type=str, help='comma-delimited list of IP-addresses of POS clients to collect data from')
 args = vars(parser.parse_args())
 
 if not os.path.exists(args['storageFolder']):
@@ -29,46 +33,56 @@ while True:
 	currencies = {}
 	histogram = Histogram()
 
+
 	histograms = (
 		[Histogram(), 'O-Saft', 'Orange Juice 0,2L', 'Orange Juice 0,4L'],
 		[Histogram(), 'Caffè', 'einf. Espresso', 'dopp. Espresso', 'einf. Cappuccino', 'dopp. Cappuccino'],
 		[Histogram(), 'Chai/Hot Chocolate', 'Hot Chocolate', 'Chai Latte'],
 		)
 
-	for f in glob.glob(os.path.join(args['storageFolder'], '*.plist')):
-		plist = plistlib.readPlist(f)
-		day = Day(time.localtime(plist['time'])[0], time.localtime(plist['time'])[1], time.localtime(plist['time'])[2], locale = 'de')
-		dayname = day.weekday
+	for IP in args['IPs'].split(','):
+		foldername = os.path.basename(args['storageFolder'])
+		IPfolder = os.path.join(args['storageFolder'], IP)
+		if not IPfolder.endswith('/'):
+			IPfolder += '/'
+		os.system('mkdir %s' % IPfolder)
+		os.system('rsync -avze ssh pos@%s:/home/pos/feldkasse/%s/ %s' % (IP, foldername, foldername, IPfolder))
 
-		# init
-		if not days.has_key(dayname):
-			days[dayname] = {}
-			days[dayname]['currencies'] = {}
-			days[dayname]['products'] = {}
 
-		# products
-		for product in plist['products']:
-			if not days[dayname]['products'].has_key(product):
-				days[dayname]['products'][product] = 0
-			days[dayname]['products'][product] += plist['products'][product]
+		for f in glob.glob(os.path.join(IPfolder, '*.plist')):
+			plist = plistlib.readPlist(f)
+			day = Day(time.localtime(plist['time'])[0], time.localtime(plist['time'])[1], time.localtime(plist['time'])[2], locale = 'de')
+			dayname = day.weekday
+
+			# init
+			if not days.has_key(dayname):
+				days[dayname] = {}
+				days[dayname]['currencies'] = {}
+				days[dayname]['products'] = {}
+
+			# products
+			for product in plist['products']:
+				if not days[dayname]['products'].has_key(product):
+					days[dayname]['products'][product] = 0
+				days[dayname]['products'][product] += plist['products'][product]
+				#total
+				if not products.has_key(product):
+					products[product] = 0
+				products[product] += plist['products'][product]
+			
+			
+				for i in range(len(histograms)):
+					if product in histograms[i]:
+						histograms[i][0].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
+
+			# price
+			if not days[dayname]['currencies'].has_key(plist['currency']):
+				days[dayname]['currencies'][plist['currency']] = 0
+			days[dayname]['currencies'][plist['currency']] += plist['price']
 			#total
-			if not products.has_key(product):
-				products[product] = 0
-			products[product] += plist['products'][product]
-			
-			
-			for i in range(len(histograms)):
-				if product in histograms[i]:
-					histograms[i][0].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
-
-		# price
-		if not days[dayname]['currencies'].has_key(plist['currency']):
-			days[dayname]['currencies'][plist['currency']] = 0
-		days[dayname]['currencies'][plist['currency']] += plist['price']
-		#total
-		if not currencies.has_key(plist['currency']):
-			currencies[plist['currency']] = 0
-		currencies[plist['currency']] += plist['price']
+			if not currencies.has_key(plist['currency']):
+				currencies[plist['currency']] = 0
+			currencies[plist['currency']] += plist['price']
 
 	os.system('clear')
 	
