@@ -243,7 +243,7 @@ checkout = Checkout()
 try:
 	while True:
 		os.system('clear')
-		print time.strftime("%A, %I:%M%p").rjust(70)
+		print (time.strftime("%A, ") + str(int(time.strftime("%I"))) + time.strftime(":%M" + time.strftime("%p").lower).rjust(70)
 		checkout.screenPrint()
 
 
