@@ -245,7 +245,7 @@ keyPressHistory = ''
 try:
 	while True:
 		os.system('clear')
-		print (time.strftime("%A, ") + str(int(time.strftime("%I"))) + time.strftime(":%M") + time.strftime("%p").lower()).rjust(rows, columns = os.popen('stty size', 'r').read().split()[1])
+		print (time.strftime("%A, ") + str(int(time.strftime("%I"))) + time.strftime(":%M") + time.strftime("%p").lower()).rjust(os.popen('stty size', 'r').read().split()[1])
 		checkout.screenPrint()
 
 
