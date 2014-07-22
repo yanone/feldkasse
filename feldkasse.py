@@ -275,13 +275,10 @@ try:
 				checkout = Checkout()
 				currency = 'EUR'
 
-		if keyPressHistory[:-5] == ',,,,,':
+		if keypress == '.':
 			if printerServerThread:
 				printerServerThread.stop()
 			exit()
-
-		if keyPressHistory[:-5] == '00000':
-			Execute('sudo reboot')
 
 
 		checkout.screenPrint()
