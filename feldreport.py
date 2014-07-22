@@ -4,7 +4,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import os, plistlib, glob, time
-from ynlib.system import GetChr 
+from ynlib.system import GetChr, Execute
 from ynlib.strings import formatPrice
 from ynlib.calendars import *
 from ynlib.histogram import *
@@ -45,10 +45,10 @@ while True:
 		IPfolder = os.path.join(args['storageFolder'], IP)
 		if not IPfolder.endswith('/'):
 			IPfolder += '/'
-		os.system('mkdir %s' % IPfolder)
+		a = Execute('ssh-copy-id -i ~/.ssh/id_rsa.pub %s' % IP)
+		a = Execute('mkdir -p %s' % IPfolder)
 		p = 'rsync -avze ssh pos@%s:/home/pos/feldkasse/%s/ %s' % (IP, foldername, IPfolder)
-		print p
-#		os.system(p)
+		Execute(p)
 
 
 		for f in glob.glob(os.path.join(IPfolder, '*.plist')):
