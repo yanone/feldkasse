@@ -46,64 +46,63 @@ while True:
 	IPs = {}
 
 	for IP in args['IPs'].split(','):
+		foldername = os.path.basename(args['storageFolder'])
+		IPfolder = os.path.join(args['storageFolder'], IP)
+		if not IPfolder.endswith('/'):
+			IPfolder += '/'
+
 		if os.system("ping -c 1 %s" % IP) == 0:
 			IPs[IP] = 'online'
-			foldername = os.path.basename(args['storageFolder'])
-			IPfolder = os.path.join(args['storageFolder'], IP)
-			if not IPfolder.endswith('/'):
-				IPfolder += '/'
 			a = Execute('ssh-copy-id -i /home/pos/.ssh/id_rsa.pub %s' % IP)
 			a = Execute('mkdir -p %s' % IPfolder)
 			p = 'rsync -avze ssh pos@%s:/home/pos/feldkasse/%s/ %s' % (IP, foldername, IPfolder)
 			Execute(p)
-
-
-			for f in glob.glob(os.path.join(IPfolder, '*.plist')):
-				plist = plistlib.readPlist(f)
-				day = Day(time.localtime(plist['time'])[0], time.localtime(plist['time'])[1], time.localtime(plist['time'])[2], locale = 'de')
-				dayname = day.weekday
-
-				# init
-				if not days.has_key(dayname):
-					days[dayname] = {}
-					days[dayname]['currencies'] = {}
-					days[dayname]['products'] = {}
-
-				# products
-				for product in plist['products']:
-					if not days[dayname]['products'].has_key(product):
-						days[dayname]['products'][product] = 0
-					days[dayname]['products'][product] += plist['products'][product]
-					#total
-					if not products.has_key(product):
-						products[product] = 0
-					products[product] += plist['products'][product]
-			
-			
-					for i in range(len(histograms)):
-						if product in histograms[i]:
-							histograms[i][0].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
-
-				# price
-				if not days[dayname]['currencies'].has_key(plist['currency']):
-					days[dayname]['currencies'][plist['currency']] = 0
-				days[dayname]['currencies'][plist['currency']] += plist['price']
-				#total
-				if not currencies.has_key(plist['currency']):
-					currencies[plist['currency']] = 0
-				currencies[plist['currency']] += plist['price']
-				
-				# letzte Stunde:
-				if plist['time'] > time.time() - 3600:
-					if plist['currency'] == 'HUF':
-						letzteStunde += plist['price'] / float(umrechnungsKurs)
-					else:
-						letzteStunde += plist['price']
-				
 		else:
 			IPs[IP] = 'offline'
 
 
+		for f in glob.glob(os.path.join(IPfolder, '*.plist')):
+			plist = plistlib.readPlist(f)
+			day = Day(time.localtime(plist['time'])[0], time.localtime(plist['time'])[1], time.localtime(plist['time'])[2], locale = 'de')
+			dayname = day.weekday
+
+			# init
+			if not days.has_key(dayname):
+				days[dayname] = {}
+				days[dayname]['currencies'] = {}
+				days[dayname]['products'] = {}
+
+			# products
+			for product in plist['products']:
+				if not days[dayname]['products'].has_key(product):
+					days[dayname]['products'][product] = 0
+				days[dayname]['products'][product] += plist['products'][product]
+				#total
+				if not products.has_key(product):
+					products[product] = 0
+				products[product] += plist['products'][product]
+		
+		
+				for i in range(len(histograms)):
+					if product in histograms[i]:
+						histograms[i][0].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
+
+			# price
+			if not days[dayname]['currencies'].has_key(plist['currency']):
+				days[dayname]['currencies'][plist['currency']] = 0
+			days[dayname]['currencies'][plist['currency']] += plist['price']
+			#total
+			if not currencies.has_key(plist['currency']):
+				currencies[plist['currency']] = 0
+			currencies[plist['currency']] += plist['price']
+			
+			# letzte Stunde:
+			if plist['time'] > time.time() - 3600:
+				if plist['currency'] == 'HUF':
+					letzteStunde += plist['price'] / float(umrechnungsKurs)
+				else:
+					letzteStunde += plist['price']
+				
 	os.system('clear')
 	
 	
