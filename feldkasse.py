@@ -240,6 +240,8 @@ checkout = Checkout()
 
 # Loop
 
+keyPressHistory = ''
+
 try:
 	while True:
 		os.system('clear')
@@ -248,7 +250,7 @@ try:
 
 
 		keypress = GetChr(60) # wait max. 60 seconds
-	
+		keyPressHistory += str(keypress)
 	
 		# Change action
 		if checkout.actions.has_key(keypress):
@@ -273,10 +275,13 @@ try:
 				checkout = Checkout()
 				currency = 'EUR'
 
-		if keypress == ',':
+		if keyPressHistory[:-5] == ',,,,,':
 			if printerServerThread:
 				printerServerThread.stop()
 			exit()
+
+		if keyPressHistory[:-5] == '00000':
+			Execute('sudo reboot')
 
 
 		checkout.screenPrint()
