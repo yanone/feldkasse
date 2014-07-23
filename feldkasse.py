@@ -139,8 +139,8 @@ class Checkout(object):
 	
 	def screenPrint(self):
 		price = 0
-		for key in self.cart.keys():
-			if self.cart[key]:
+		for key in products.keys():
+			if self.cart.has_key(key):
 				print '%sx %s' % (str(self.cart[key]).rjust(2), products[key].name)
 				price += int(self.cart[key]) * products[key].price[currency]
 		print self.action
@@ -246,6 +246,7 @@ try:
 	while True:
 		os.system('clear')
 		print (time.strftime("%A, ") + str(int(time.strftime("%I"))) + time.strftime(":%M") + time.strftime("%p").lower()).rjust(int(os.popen('stty size', 'r').read().split()[1]))
+		print
 		checkout.screenPrint()
 
 
