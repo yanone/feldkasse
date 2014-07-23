@@ -139,8 +139,8 @@ class Checkout(object):
 	
 	def screenPrint(self):
 		price = 0
-		for key in products.keys():
-			if self.cart.has_key(key):
+		for key in productsPlist['productsOrder'].split(","):
+			if self.cart.has_key(key) and self.cart[key] > 0:
 				print '%sx %s' % (str(self.cart[key]).rjust(2), products[key].name)
 				price += int(self.cart[key]) * products[key].price[currency]
 		print self.action
@@ -195,8 +195,8 @@ class Checkout(object):
 		price = 0
 		string = []
 		string.append('JUICIE CAFE @ O.Z.O.R.A')
-		for key in self.cart.keys():
-			if self.cart[key]:
+		for key in productsPlist['productsOrder'].split(","):
+			if self.cart.has_key(key) and self.cart[key] > 0:
 				string.append('%sx %s' % (str(self.cart[key]).rjust(2), products[key].name))
 				price += int(self.cart[key]) * products[key].price[currency]
 		string.append('' + str(formatPrice(price)) + ' ' + currency + '')
@@ -229,10 +229,11 @@ currency = 'EUR'
 products = {}
 productsPlist = plistlib.readPlist(args['productsFile'])
 
-for key in productsPlist.keys():
-	products[key] = Product(productsPlist[key]['name'], productsPlist[key]['price'])
+for key in productsPlist['products'].keys():
+	products[key] = Product(productsPlist['products'][key]['name'], productsPlist['products'][key]['price'])
 
 # Start
+
 
 os.system('clear')
 checkout = Checkout()
@@ -247,6 +248,8 @@ try:
 		os.system('clear')
 		print (time.strftime("%A, ") + str(int(time.strftime("%I"))) + time.strftime(":%M") + time.strftime("%p").lower()).rjust(int(os.popen('stty size', 'r').read().split()[1]))
 		print
+		
+				
 		checkout.screenPrint()
 
 
@@ -281,8 +284,11 @@ try:
 				printerServerThread.stop()
 			exit()
 
+		
 
 		checkout.screenPrint()
+		
+
 except:
 	print "Error in loop"
 	if printerServerThread:

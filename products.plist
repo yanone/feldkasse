@@ -2,29 +2,113 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>2</key>
-	<dict>
-		<key>name</key>
-		<string>Orange Juice 0,4L</string>
-		<key>price</key>
+
+	<key>productsOrder</key>
+	<string>7,4,8,5,9,6,3</string>
+
+	<key>products</key>
 		<dict>
-			<key>EUR</key>
-			<integer>4</integer>
-			<key>HUF</key>
-			<integer>600</integer>
+			<key>7</key>
+			<dict>
+				<key>name</key>
+				<string>Single Espresso</string>
+				<key>category</key>
+				<string>Coffee</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>1.5</real>
+					<key>HUF</key>
+					<integer>450</integer>
+				</dict>
+			</dict>
+			<key>4</key>
+			<dict>
+				<key>name</key>
+				<string>Double Espresso</string>
+				<key>category</key>
+				<string>Coffee</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>2.5</real>
+					<key>HUF</key>
+					<integer>750</integer>
+				</dict>
+			</dict>
+
+			<key>8</key>
+			<dict>
+				<key>name</key>
+				<string>Single Cappuccino</string>
+				<key>category</key>
+				<string>Coffee</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>2</real>
+					<key>HUF</key>
+					<integer>600</integer>
+				</dict>
+			</dict>
+			<key>5</key>
+			<dict>
+				<key>name</key>
+				<string>Double Cappuccino</string>
+				<key>category</key>
+				<string>Coffee</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>3</real>
+					<key>HUF</key>
+					<integer>900</integer>
+				</dict>
+			</dict>
+
+			<key>9</key>
+			<dict>
+				<key>name</key>
+				<string>Chai Latte</string>
+				<key>category</key>
+				<string>Chai/Choc/Tea</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>3</real>
+					<key>HUF</key>
+					<integer>900</integer>
+				</dict>
+			</dict>
+			<key>6</key>
+			<dict>
+				<key>name</key>
+				<string>Hot Chocolate</string>
+				<key>category</key>
+				<string>Chai/Choc/Tea</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>3</real>
+					<key>HUF</key>
+					<integer>900</integer>
+				</dict>
+			</dict>
+			<key>3</key>
+			<dict>
+				<key>name</key>
+				<string>Tea</string>
+				<key>category</key>
+				<string>Chai/Choc/Tea</string>
+				<key>price</key>
+				<dict>
+					<key>EUR</key>
+					<real>2</real>
+					<key>HUF</key>
+					<integer>600</integer>
+				</dict>
 		</dict>
 	</dict>
-	<key>1</key>
-	<dict>
-		<key>name</key>
-		<string>Orange Juice 0,2L</string>
-		<key>price</key>
-		<dict>
-			<key>EUR</key>
-			<integer>2</integer>
-			<key>HUF</key>
-			<integer>300</integer>
-		</dict>
-	</dict>
+
 </dict>
 </plist>
