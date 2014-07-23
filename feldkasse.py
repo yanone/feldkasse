@@ -199,6 +199,7 @@ class Checkout(object):
 			if self.cart.has_key(key) and self.cart[key] > 0:
 				productPrintString = '%sx %s à %s %s' % (str(self.cart[key]).rjust(2), products[key].name, formatPrice(products[key].price[currency]), currency)
 				price += int(self.cart[key]) * products[key].price[currency]
+				string.append(productPrintString)
 		string.append('' + str(formatPrice(price)) + ' ' + currency + '')
 		if currency == 'HUF':
 			mwst_summe = price / umrechnungskurs * mwst
