@@ -155,7 +155,7 @@ class Checkout(object):
 
 			for key in self.cart.keys():
 				if self.cart[key]:
-					cart['products'][products[key].name] = self.cart[key]
+					cart['products'][products[key].name + ',' + products[key].category] = self.cart[key]
 					price += int(self.cart[key]) * products[key].price[currency]
 			cart['price'] = price
 			cart['currency'] = currency
@@ -212,9 +212,10 @@ class Checkout(object):
 		
 
 class Product(object):
-	def __init__(self, name, price):
+	def __init__(self, name, price, category = ''):
 		self.name = name
 		self.price = price
+		self.category = category
 	def __repr__(self):
 		return '<Product %s, %s>' % (self.name, self.price)
 
@@ -231,7 +232,7 @@ products = {}
 productsPlist = plistlib.readPlist(args['productsFile'])
 
 for key in productsPlist['products'].keys():
-	products[key] = Product(productsPlist['products'][key]['name'], productsPlist['products'][key]['price'])
+	products[key] = Product(productsPlist['products'][key]['name'], productsPlist['products'][key]['price'], productsPlist['products'][key]['category'])
 
 # Start
 

@@ -36,11 +36,7 @@ while True:
 	letzteStunde = 0
 
 
-	histograms = (
-		[Histogram(), 'O-Saft', 'Orange Juice 0,2L', 'Orange Juice 0,4L'],
-		[Histogram(), 'Caffè', 'einf. Espresso', 'dopp. Espresso', 'einf. Cappuccino', 'dopp. Cappuccino'],
-		[Histogram(), 'Chai/Hot Chocolate', 'Hot Chocolate', 'Chai Latte'],
-		)
+	histograms = {}
 
 
 	IPs = {}
@@ -74,6 +70,7 @@ while True:
 
 			# products
 			for product in plist['products']:
+				productName, productCategory = product.split(',')
 				if not days[dayname]['products'].has_key(product):
 					days[dayname]['products'][product] = 0
 				days[dayname]['products'][product] += plist['products'][product]
@@ -82,10 +79,8 @@ while True:
 					products[product] = 0
 				products[product] += plist['products'][product]
 		
-		
-				for i in range(len(histograms)):
-					if product in histograms[i]:
-						histograms[i][0].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
+				if histograms.has_key(productCategory):
+					histograms[productCategory].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
 
 			# price
 			if not days[dayname]['currencies'].has_key(plist['currency']):
@@ -148,11 +143,10 @@ while True:
 	print 'Umsatz letzte Stunde: %sEUR' % formatPrice(letzteStunde)
 
 	
-	for i in histograms:
+	for key in histograms.keys():
 		print
-		h = i.pop(0)
-		desc = i.pop(0)
-		print 'Stückzahlen: %s (max: %s)' % (desc, h.yMax)
+		h = histograms[key]
+		print 'Stückzahlen: %s (max: %s)' % (key, h.yMax)
 		print h.outputMatrix(0, 24, 0, 7)
 		print '0 2 4 6 8 10121416182022' 
 	
