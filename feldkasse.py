@@ -155,7 +155,7 @@ class Checkout(object):
 
 			for key in self.cart.keys():
 				if self.cart[key]:
-					cart['products'][products[key].name + ',' + products[key].category] = self.cart[key]
+					cart['products'][products[key].name + '//' + products[key].category] = self.cart[key]
 					price += int(self.cart[key]) * products[key].price[currency]
 			cart['price'] = price
 			cart['currency'] = currency
