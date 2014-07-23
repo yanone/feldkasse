@@ -197,7 +197,7 @@ class Checkout(object):
 		string.append('JUICIE CAFE @ O.Z.O.R.A')
 		for key in productsPlist['productsOrder'].split(","):
 			if self.cart.has_key(key) and self.cart[key] > 0:
-				string.append('%sx %s' % (str(self.cart[key]).rjust(2), products[key].name))
+				productPrintString = '%sx %s à %s %s' % (str(self.cart[key]).rjust(2), products[key].name, formatPrice(products[key].price[currency]), currency)
 				price += int(self.cart[key]) * products[key].price[currency]
 		string.append('' + str(formatPrice(price)) + ' ' + currency + '')
 		if currency == 'HUF':
