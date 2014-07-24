@@ -70,8 +70,8 @@ while True:
 
 			# products
 			for product in plist['products']:
-				if ',' in product:
-					productName, productCategory = product.split(',')
+				if '//' in product:
+					productName, productCategory = product.split('//')
 				else:
 					productName = product
 					productCategory = 'undefined'
