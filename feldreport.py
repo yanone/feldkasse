@@ -75,9 +75,9 @@ while True:
 				else:
 					productName = product
 					productCategory = 'undefined'
-				if not days[dayname]['products'].has_key(product):
-					days[dayname]['products'][product] = 0
-				days[dayname]['products'][product] += plist['products'][product]
+				if not days[dayname]['products'].has_key(productName):
+					days[dayname]['products'][productName] = 0
+				days[dayname]['products'][productName] += plist['products'][product]
 				#total
 				if not products.has_key(product):
 					products[product] = 0
