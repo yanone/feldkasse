@@ -70,7 +70,11 @@ while True:
 
 			# products
 			for product in plist['products']:
-				productName, productCategory = product.split(',')
+				if ',' in product:
+					productName, productCategory = product.split(',')
+				else:
+					productName = product
+					productCategory = 'undefined'
 				if not days[dayname]['products'].has_key(product):
 					days[dayname]['products'][product] = 0
 				days[dayname]['products'][product] += plist['products'][product]
@@ -78,9 +82,10 @@ while True:
 				if not products.has_key(product):
 					products[product] = 0
 				products[product] += plist['products'][product]
-		
-				if histograms.has_key(productCategory):
-					histograms[productCategory].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
+				
+				if not histograms.has_key(productCategory):
+					histograms[productCategory] = Histogram()
+				histograms[productCategory].addValue(int(time.localtime(plist['time'])[3]), plist['products'][product])
 
 			# price
 			if not days[dayname]['currencies'].has_key(plist['currency']):
@@ -144,10 +149,11 @@ while True:
 
 	
 	for key in histograms.keys():
-		print
-		h = histograms[key]
-		print 'Stückzahlen: %s (max: %s)' % (key, h.yMax)
-		print h.outputMatrix(0, 24, 0, 7)
-		print '0 2 4 6 8 10121416182022' 
+		if key != 'undefined' and key != 'Pfand':
+			print
+			h = histograms[key]
+			print 'Stückzahlen: %s (max: %s)' % (key, h.yMax)
+			print h.outputMatrix(0, 24, 0, 7)
+			print '0 2 4 6 8 10121416182022' 
 	
 	time.sleep(60)
